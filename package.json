@@ -1,0 +1,37 @@
+{
+  "name": "webaudio-serial-tx",
+  "version": "1.0.0",
+  "description": "transmit serial data over webaudio in the browser",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "dependencies": {
+    "defined": "^1.0.0",
+    "inherits": "^2.0.1",
+    "readable-stream": "^2.0.1",
+    "uart-pack-frame": "^1.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/substack/webaudio-serial-tx.git"
+  },
+  "keywords": [
+    "serial",
+    "uart",
+    "webaudio",
+    "browser",
+    "audio",
+    "transmit"
+  ],
+  "author": "substack",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/substack/webaudio-serial-tx/issues"
+  },
+  "homepage": "https://github.com/substack/webaudio-serial-tx#readme"
+}
