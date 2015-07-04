@@ -4,6 +4,7 @@ var Context = global.AudioContext || global.webkitAudioContext;
 var context = new Context;
 
 var baudrate = 300;
+var polarity = 1;
 var win = Math.floor(context.sampleRate / baudrate);
 var sp = context.createScriptProcessor(256, 1, 1);
 
@@ -25,21 +26,18 @@ var index = 0;
 
 function onaudio (ev) {
     var output = ev.outputBuffer.getChannelData(0);
-    for (var i = 0; i < win; i++) {
+    for (var i = 0; i < output.length; i++) {
         if (i % 10 === 0) {
-            output[i] = 0;
+            output[i] = -1 * polarity;
         }
         else if (i % 10 === 9) {
-            output[i] = 1;
+            output[i] = 1 * polarity;
         }
         else {
             // least significant bit first
             var x = Math.floor(index++ / win);
             var n = Math.floor(x / 8);
-            output[i] = (data[n] >> (x % 8)) % 2;
+            output[i] = ((data[n] >> (x % 8)) % 2 ? 1 : -1) * polarity;
         }
-    }
-    for (; i < output.length; i++) {
-        output[i] = 1;
     }
 }
