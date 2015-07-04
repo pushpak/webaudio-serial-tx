@@ -1,43 +1,60 @@
-// 8 bits, no parity, 1 stop bit
+var uart = require('uart-pack-frame');
+var Writable = require('readable-stream/writable');
+var defined = require('defined');
+var inherits = require('inherits');
 
-var Context = global.AudioContext || global.webkitAudioContext;
-var context = new Context;
+module.exports = Serial;
+inherits(Serial, Writable);
 
-var baudrate = 300;
-var polarity = 1;
-var win = Math.floor(context.sampleRate / baudrate);
-var sp = context.createScriptProcessor(256, 1, 1);
-
-var button = document.querySelector('button');
-button.addEventListener('click', function (ev) {
-    if (button.textContent === 'start') {
-        sp.connect(sp.context.destination);
-        button.textContent = 'stop';
+function Serial (opts) {
+    if (!(this instanceof Serial)) return new Serial(opts);
+    Writable.call(this);
+    var self = this;
+    
+    var context = opts.context;
+    if (!context) {
+        var Context = global.AudioContext || global.webkitAudioContext;
+        var context = new Context;
     }
-    else {
-        sp.disconnect(sp.context.destination);
-        button.textContent = 'start';
-    }
-});
-sp.addEventListener('audioprocess', onaudio);
-
-var data = new Buffer('hello there whateever blah blah');
-var index = 0;
-
-function onaudio (ev) {
-    var output = ev.outputBuffer.getChannelData(0);
-    for (var i = 0; i < output.length; i++) {
-        if (i % 10 === 0) {
-            output[i] = -1 * polarity;
+    this._serial = uart();
+    this._bits = [];
+    
+    var baudrate = defined(opts.baud, 300);
+    var polarity = defined(opts.polarity, 1);
+    
+    var win = Math.floor(context.sampleRate / baudrate);
+    this.sp = context.createScriptProcessor(2048, 1, 1);
+    this.sp.addEventListener('audioprocess', onaudio);
+    
+    function onaudio (ev) {
+        var output = ev.outputBuffer.getChannelData(0);
+        
+        var bits = self._bits;
+        if (bits.length < output.length) {
+            var n = Math.ceil(output.length / win);
+            var nbits = self._serial.readBits(n);
+            for (var i = 0; i < nbits.length; i++) {
+                for (var j = 0; j < win; j++) {
+                    bits.push(nbits[i]);
+                }
+            }
         }
-        else if (i % 10 === 9) {
-            output[i] = 1 * polarity;
-        }
-        else {
-            // least significant bit first
-            var x = Math.floor(index++ / win);
-            var n = Math.floor(x / 8);
-            output[i] = ((data[n] >> (x % 8)) % 2 ? 1 : -1) * polarity;
+        
+        for (var i = 0; i < output.length; i++) {
+            output[i] = (bits.shift() ? -1 : 1) * polarity;
         }
     }
 }
+
+Serial.prototype._write = function (buf, enc, next) {
+    this._serial.write(buf);
+    next();
+};
+
+Serial.prototype.start = function (dst) {
+    this.sp.connect(dst || this.sp.context.destination);
+};
+
+Serial.prototype.stop = function (dst) {
+    this.sp.disconnect(dst || this.sp.context.destination);
+};
