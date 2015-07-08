@@ -19,8 +19,16 @@ function Serial (opts) {
     this._serial = uart();
     this._bits = [];
     
-    var baudrate = defined(opts.baud, 300);
-    var polarity = defined(opts.polarity, 1);
+    var baudrate = defined(opts.baud, 9600);
+    var polarity = defined(opts.polarity, -1);
+    if (String(polarity).toLowerCase() === 'ttl') {
+        // arduinos, ftdi, all microcontroller serial ports, max 232 cip
+        polarity = -1;
+    }
+    else if (String(polarity).toLowerCase() === 'rs232') {
+        // rs232 cables; db25, db9
+        polarity = 1;
+    }
     
     var win = Math.floor(context.sampleRate / baudrate);
     this.sp = context.createScriptProcessor(2048, 1, 1);

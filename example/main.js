@@ -1,5 +1,5 @@
 var serial = require('../');
-var port = serial({ baud: 300 });
+var port = serial({ baud: 9600, polarity: 'ttl' });
 
 var button = document.querySelector('button');
 button.addEventListener('click', function (ev) {
