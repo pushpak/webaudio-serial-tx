@@ -36,13 +36,17 @@ function Serial (opts) {
     this._stopped = false;
     
     function onaudio (ev) {
-        if (self._serial.stopped && self._bits.length === 0) {
+        var output = ev.outputBuffer.getChannelData(0);
+        var bits = self._bits;
+        
+        if (opts.autosuspend !== false && !self._suspended
+        && self._serial.stopped && self._bits.length === 0) {
+            self._suspended = true;
             self.sp.context.suspend();
         }
         
-        var output = ev.outputBuffer.getChannelData(0);
-        var bits = self._bits;
-        if (bits.length < output.length) {
+        var stopping = opts.autosuspend !== false && self._serial.stopped;
+        if (bits.length < output.length && !stopping) {
             var n = Math.ceil(output.length / win);
             var nbits = self._serial.readBits(n);
             for (var i = 0; i < nbits.length; i++) {
@@ -52,13 +56,16 @@ function Serial (opts) {
             }
         }
         for (var i = 0; i < output.length; i++) {
-            output[i] = (bits.shift() ? -1 : 1) * polarity;
+            var b = bits.shift();
+            if (b === undefined) output[i] = 0;
+            else output[i] = (b ? -1 : 1) * polarity;
         }
     }
 }
 
 Serial.prototype._write = function (buf, enc, next) {
     this._serial.write(buf);
+    this._suspended = false;
     this.sp.context.resume();
     next();
 };
@@ -70,6 +77,7 @@ Serial.prototype.flush = function () {
 
 Serial.prototype.start = function (dst) {
     this._stopped = false;
+    this._suspended = false;
     if (!this._connected) {
         this.sp.connect(dst || this.sp.context.destination);
     }

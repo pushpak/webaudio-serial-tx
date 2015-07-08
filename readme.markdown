@@ -33,6 +33,8 @@ For microcontroller serial ports and arduinos set `opts.polarity` to `'tty'`.
 
 For rs232 cables, set `opts.polarity` to `'rs232'`.
 
+You might need to flip the polarity if you have a custom circuit.
+
 ## port.write(buf)
 
 Pack `buf` and send over the wire.
