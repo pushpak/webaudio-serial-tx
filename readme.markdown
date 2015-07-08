@@ -2,7 +2,7 @@
 
 transmit serial data over webaudio in the browser
 
-[view a demo](https://be4556806ffc934b6296846745f93e15d04660e7.htmlb.in/)
+[view a demo](https://f47ea724d3b21e7288e24818fe44a81ab55fe0f7.htmlb.in)
 
 # example
 
