@@ -27,6 +27,8 @@ through the system speakers using webaudio.
 
 * `opts.context` - the audio context to use
 * `opts.baud` - the number of bits per second of framed data to transmit
+* `opts.autosuspend` - automatically suspend the audio playback at the end of
+the data queue to save cpu and battery life. default: true
 * `opts.polarity` - the polarity: `'ttl'` (-1) or `'rs232'` (+1).
 
 For microcontroller serial ports and arduinos set `opts.polarity` to `'tty'`.
@@ -46,6 +48,10 @@ Start the audio playback.
 ## port.stop()
 
 Stop the audio playback.
+
+## port.flush()
+
+Discard all previously written data.
 
 # install
 
