@@ -33,6 +33,7 @@ function Serial (opts) {
     var win = Math.floor(context.sampleRate / baudrate);
     this.sp = context.createScriptProcessor(2048, 1, 1);
     this.sp.addEventListener('audioprocess', onaudio);
+    this._stopped = false;
     
     function onaudio (ev) {
         var output = ev.outputBuffer.getChannelData(0);
@@ -46,6 +47,12 @@ function Serial (opts) {
                     bits.push(nbits[i]);
                 }
             }
+            if (self._serial.stopped && !self._stopped) {
+                process.nextTick(function () {
+                    self.emit('stopped');
+                });
+            }
+            self._stopped = self._serial.stopped;
         }
         
         for (var i = 0; i < output.length; i++) {
@@ -60,9 +67,11 @@ Serial.prototype._write = function (buf, enc, next) {
 };
 
 Serial.prototype.start = function (dst) {
+    this._stopped = false;
     this.sp.connect(dst || this.sp.context.destination);
 };
 
 Serial.prototype.stop = function (dst) {
+    this._stopped = true;
     this.sp.disconnect(dst || this.sp.context.destination);
 };
