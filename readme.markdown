@@ -8,7 +8,7 @@ transmit serial data over webaudio in the browser
 
 ``` js
 var serial = require('webaudio-serial-tx');
-var port = serial({ baud: 300 });
+var port = serial({ baud: 9600 });
 
 port.write(new Buffer(5000).fill('wow'));
 port.start();
@@ -27,6 +27,11 @@ through the system speakers using webaudio.
 
 * `opts.context` - the audio context to use
 * `opts.baud` - the number of bits per second of framed data to transmit
+* `opts.polarity` - the polarity: `'ttl'` (-1) or `'rs232'` (+1).
+
+For microcontroller serial ports and arduinos set `opts.polarity` to `'tty'`.
+
+For rs232 cables, set `opts.polarity` to `'rs232'`.
 
 ## port.write(buf)
 
