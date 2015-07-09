@@ -1,6 +1,6 @@
 {
   "name": "webaudio-serial-tx",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "transmit serial data over webaudio in the browser",
   "main": "index.js",
   "directories": {
