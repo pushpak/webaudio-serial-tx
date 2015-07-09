@@ -42,7 +42,7 @@ function Serial (opts) {
         if (opts.autosuspend !== false && !self._suspended
         && self._serial.stopped && self._bits.length === 0) {
             self._suspended = true;
-            self.sp.context.suspend();
+            if (self.sp.context.suspend) self.sp.context.suspend();
         }
         
         var stopping = opts.autosuspend !== false && self._serial.stopped;
@@ -66,7 +66,7 @@ function Serial (opts) {
 Serial.prototype._write = function (buf, enc, next) {
     this._serial.write(buf);
     this._suspended = false;
-    this.sp.context.resume();
+    if (this.sp.context.resume) this.sp.context.resume();
     next();
 };
 
@@ -82,7 +82,7 @@ Serial.prototype.start = function (dst) {
         this.sp.connect(dst || this.sp.context.destination);
     }
     this._connected = true;
-    this.sp.context.resume();
+    if (this.sp.context.resume) this.sp.context.resume();
 };
 
 Serial.prototype.stop = function () {
