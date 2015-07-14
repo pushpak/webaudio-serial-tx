@@ -2,7 +2,9 @@
 
 transmit serial data over webaudio in the browser
 
-[view a demo](https://d39df2d6c4a51b06f1de4123bc0a1a981ec0963a.htmlb.in)
+[view a demo](http://substack.neocities.org/serial.html)
+
+[serial over webaudio writeup](https://sudoroom.org/serial-over-webaudio/)
 
 # example
 
